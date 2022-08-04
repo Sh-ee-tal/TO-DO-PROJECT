@@ -3,13 +3,13 @@ use std::fs::File;
 use std::io;
 use std::io::BufReader;
 mod tasks;
-use crate::tasks::{Add, Customer, Del, Edit, New_Customer, Read};
+use crate::tasks::{add, del, edit, new_customer, read, Customer};
 fn main() {
     //Reading from dataset
     let file = File::open("data.json").expect("Error opening fille");
-    let read = BufReader::new(file);
+    let reader = BufReader::new(file);
     let mut data: HashMap<String, Customer> =
-        serde_json::from_reader(read).expect("Error reading JSON file");
+        serde_json::from_reader(reader).expect("Error reading JSON file");
     //Saving dataset
     fn save_data(data: &HashMap<String, Customer>) {
         //create returns result type
@@ -44,7 +44,7 @@ fn main() {
                 let trim_task = task.as_str().trim().to_string();
                 //Read task
                 if trim_task == "Read" {
-                    Read(&mut x.todo);
+                    read(&mut x.todo);
                 }
                 //Add task
                 else if trim_task == "Add" {
@@ -54,7 +54,7 @@ fn main() {
                         .read_line(&mut tadd)
                         .expect("fail to take input to  be add");
                     let trim_tadd = tadd.as_str().trim().to_string();
-                    Add(&mut x.todo, trim_tadd);
+                    add(&mut x.todo, trim_tadd);
                     save_data(&data);
                 }
                 //Delete task
@@ -67,7 +67,7 @@ fn main() {
                     let trim_tbdel = tbdel.as_str().trim().to_string();
                     let tdel = trim_tbdel.parse::<usize>().unwrap();
                     if tdel < x.todo.len() {
-                        Del(&mut x.todo, tdel);
+                        del(&mut x.todo, tdel);
                         save_data(&data);
                     } else {
                         println!("Index entered does not exist");
@@ -84,12 +84,12 @@ fn main() {
                     let tedit = trim_tbedit.parse::<usize>().unwrap();
                     if tedit < x.todo.len() {
                         println!("Edit");
-                        let mut edit = String::new();
+                        let mut ed = String::new();
                         io::stdin()
-                            .read_line(&mut edit)
+                            .read_line(&mut ed)
                             .expect("fail to take input to edit");
-                        let trim_edit = edit.as_str().trim().to_string();
-                        Edit(&mut x.todo, tedit, trim_edit);
+                        let trim_edit = ed.as_str().trim().to_string();
+                        edit(&mut x.todo, tedit, trim_edit);
                         save_data(&data);
                     } else {
                         println!("Index entered does not exist");
@@ -125,7 +125,7 @@ fn main() {
                 .read_line(&mut new_password)
                 .expect("fail to take new password ");
             let trim_newp = new_password.as_str().trim().to_string();
-            New_Customer(&mut data, trim_newc, trim_newp);
+            new_customer(&mut data, trim_newc, trim_newp);
             save_data(&data);
         }
     }
